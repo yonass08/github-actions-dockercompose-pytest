@@ -5,16 +5,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
+    - uses: actions/checkout@v2
     - name: Set up Docker Compose
       uses: docker/compose-action@v2
-      with:
-        version: '1.29.2'  # Use the version you need
-
-    - name: Run Tests
-      run: |
-        docker-compose exec app pytest
+    - name: docker-compose up
+      env:
+        COMPOSE_INTERACTIVE_NO_CLI: 1
+      run: docker-compose up -d
+    - name: Check running containers
+      run: docker-compose ps -a
+    - name: Check logs
+      run: docker-compose logs app
+    - name: Test with pytest
+      env:
+        COMPOSE_INTERACTIVE_NO_CLI: 1
+      run: docker-compose exec app pytest
